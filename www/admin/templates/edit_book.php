@@ -95,4 +95,4 @@ if (isset($_SESSION['edit_book']['res'])) {
         });
     };
 </script>
-<script type="text/javascript" src="<?=ADMIN_TEMPLATE?>js/loadimage.js"></script>
+<script type="text/javascript" src="lib/js/loadimage.js"></script>

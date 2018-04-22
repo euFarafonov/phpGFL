@@ -1,0 +1,4 @@
+AuthType Basic  
+AuthName "Private zone. Only for administrator!"
+AuthUserFile  Z:/home/mybook.com/www/.htpasswd  
+require user admin

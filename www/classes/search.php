@@ -10,12 +10,9 @@ class search extends ACore {
             $msg = "Поисковый запрос должен содержать не менее 3 символов!";
         } else {
             $query = "SELECT id, name FROM book WHERE (name LIKE '%{$str}%') ORDER BY name ASC";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+            $arr = $this->db->queryAll($query);
             
-            if (mysqli_num_rows($res) > 0) {
-                while ($row_search = mysqli_fetch_assoc($res)) {
-                    $result_search[] = $row_search;
-                }
+            if (count($arr) > 0) {
                 $status = "OK";
             } else {
                 $status = "ERROR";
@@ -23,7 +20,7 @@ class search extends ACore {
             }
         }
         if ($status == "OK") {
-            $answer = array("state" => $status, "result" => $result_search);
+            $answer = array("state" => $status, "result" => $arr);
         } else {
             $answer = array("state" => $status, "result" => $msg);
         }

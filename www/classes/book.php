@@ -53,9 +53,10 @@ class book extends ACore {
         
         $_SESSION['book_info'] = '';
         $book_id = (int)$_GET['book_id'];
+        
         $query = "SELECT id, name, about, price, img FROM book WHERE id = $book_id";
-        $res = mysqli_query($this->db, $query) or die(mysqli_error($this->db));
-        $book_info = mysqli_fetch_assoc($res);
+        $book_info = $this->db->queryOne($query);
+        
         $_SESSION['book_info'] = $book_info;
         
         include 'templates/book.php';

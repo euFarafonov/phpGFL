@@ -2,6 +2,8 @@
 session_start();
 
 require_once 'config.php';
+require_once 'classes/Database.php';
+//$db = new Database(HOST, USER, PASS, DB);
 require_once 'classes/ACore.php';
 
 // поиск

@@ -5,12 +5,7 @@ abstract class ACore_admin {
         $genres = array();// массив жанров
     
     public function __construct() {
-        $this->db = mysqli_connect(HOST, USER, PASS, DB);
-        
-        if (!$this->db) {
-            exit('No connect to server');
-        }
-        mysqli_query($this->db, "SET NAMES 'UTF8'") or exit('Cann`t set charset');
+        $this->db = new Database(HOST, USER, PASS, DB);
     }
     
     /* ===== HEADER ===== */
@@ -63,9 +58,8 @@ abstract class ACore_admin {
             
             // проверка, нет ли уже такой книги
             $query = "SELECT id FROM book WHERE name = '$name'";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
             
-            if (mysqli_num_rows($res) > 0) {
+            if ($this->db->check($query)) {
                 $_SESSION['add_book']['res'] = "<div class='error'>Книга с таким названием уже добавлена!</div>";
                 
                 return false;
@@ -353,11 +347,7 @@ abstract class ACore_admin {
     /* ===== Массив всех авторов ===== */
     public function get_authors() {
         $query = "SELECT id, name FROM author ORDER BY name ASC";
-        $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
-        
-        while ($row = mysqli_fetch_assoc($res)) {
-            $this->authors[] = $row;
-        }
+        $this->authors = $this->db->queryAll($query);
     }
     
     /*===== Имя автора =====*/

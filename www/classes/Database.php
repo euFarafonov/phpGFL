@@ -25,9 +25,20 @@ class Database {
     
     public function queryOne($sql) {
         $res = mysqli_query($this->linkDb, $sql) or exit(mysqli_error($this->linkDb));
+        $str = null;
         $str = mysqli_fetch_assoc($res);
         
         return $str;
+    }
+    
+    public function execute($sql) {
+        $res = mysqli_query($this->linkDb, $sql) or exit(mysqli_error($this->linkDb));
+        return $res;
+    }
+    
+    public function check($sql) {
+        $res = mysqli_query($this->linkDb, $sql) or exit(mysqli_error($this->linkDb));
+        return (mysqli_num_rows($res) > 0) ? true : false;
     }
 }
 ?>

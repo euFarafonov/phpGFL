@@ -2,7 +2,7 @@
 session_start();
 
 require_once '../config.php';
-require_once 'classes/Database.php';
+require_once '../classes/Database.php';
 require_once 'classes/ACore_admin.php';
 
 // удаление картинок товара

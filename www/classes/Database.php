@@ -40,5 +40,12 @@ class Database {
         $res = mysqli_query($this->linkDb, $sql) or exit(mysqli_error($this->linkDb));
         return (mysqli_num_rows($res) > 0) ? true : false;
     }
+    
+    public function insert($sql) {
+        $res = mysqli_query($this->linkDb, $sql) or exit(mysqli_error($this->linkDb));
+        $id = (mysqli_affected_rows($this->linkDb) > 0) ? mysqli_insert_id($this->linkDb) : 0;
+        
+        return $id;
+    }
 }
 ?>

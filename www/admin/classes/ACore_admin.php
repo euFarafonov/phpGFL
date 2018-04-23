@@ -67,11 +67,9 @@ abstract class ACore_admin {
             
             // вставка книги в БД
             $query = "INSERT INTO book (name, about, price) VALUES ('$name', '$about', $price)";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+            $id = $this->db->insert($query);// ID сохраненной книги
             
-            if (mysqli_affected_rows($this->db) > 0) {
-                $id = mysqli_insert_id($this->db); // ID сохраненной книги
-                
+            if ($id) {
                 // добавление в БД авторов книги
                 $author_values = "";
                 foreach ($authors as $author_id) {
@@ -79,7 +77,7 @@ abstract class ACore_admin {
                 }
                 $author_values = substr($author_values, 0, -1);
                 $query = "INSERT INTO book_author (book_id, author_id) VALUES" . $author_values;
-                $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+                $this->db->insert($query);
                 
                 // добавление в БД жанров книги
                 $genres_values = "";
@@ -88,7 +86,7 @@ abstract class ACore_admin {
                 }
                 $genres_values = substr($genres_values, 0, -1);
                 $query = "INSERT INTO book_genre (book_id, genre_id) VALUES" . $genres_values;
-                $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+                $this->db->insert($query);
                 
                 // добавление в БД фото книги
                 $types = array("image/gif", "image/png", "image/jpeg", "image/pjpeg", "image/x-png"); // массив допустимых расширений картинок
@@ -122,7 +120,8 @@ abstract class ACore_admin {
                             $this->resize("../userfiles/book_img/tmp/$imgName", "../userfiles/book_img/baseimg/$imgName", 220, 320, $imgExt);
                             unlink("../userfiles/book_img/tmp/$imgName");
                             
-                            mysqli_query($this->db, "UPDATE book SET img = '$imgName' WHERE id = $id");
+                            $query = "UPDATE book SET img = '$imgName' WHERE id = $id";
+                            $this->db->execute($query);
                         } else {
                             $_SESSION['answer'] .= "<div class='error'>Не удалось переместить загруженную картинку! Проверьте права на папки в каталоге ../userfiles/book_img/ </div>";
                         }
@@ -143,9 +142,7 @@ abstract class ACore_admin {
     /* ===== Получение данных книги для редактирования ===== */
     public function get_book_info($id) {
         $query = "SELECT * FROM book WHERE id = $id";
-        $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
-        $book = array();
-        $book = mysqli_fetch_assoc($res);
+        $book = $this->db->queryOne($query);
         
         return $book;  
     }
@@ -153,12 +150,7 @@ abstract class ACore_admin {
     /* ===== Массив всех авторов для заданной книги ===== */
     public function get_authors_id($id) {
         $query = "SELECT author_id FROM book_author WHERE book_id = $id";
-        $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
-        $authors_id_arr = array();
-        
-        while ($row = mysqli_fetch_assoc($res)) {
-            $authors_id_arr[] = $row['author_id'];
-        }
+        $authors_id_arr = $this->db->queryAll($query);
         
         return $authors_id_arr;
     }
@@ -166,12 +158,7 @@ abstract class ACore_admin {
     /* ===== Массив всех жанров для заданной книги ===== */
     public function get_genres_id($id) {
         $query = "SELECT genre_id FROM book_genre WHERE book_id = $id";
-        $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
-        $genre_id_arr = array();
-        
-        while ($row = mysqli_fetch_assoc($res)) {
-            $genre_id_arr[] = $row['genre_id'];
-        }
+        $genre_id_arr = $this->db->queryAll($query);
         
         return $genre_id_arr;
     }
@@ -194,22 +181,22 @@ abstract class ACore_admin {
             
             // проверка, нет ли уже такой книги
             $query = "SELECT id FROM book WHERE name = '$name'";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
-            $row = mysqli_fetch_assoc($res);
+            $res = $this->db->queryOne($query);
+            $check_id = (int)$res['id'];
             
-            if (mysqli_num_rows($res) > 0 && $row['id'] != $id) {
+            if ($check_id && $check_id != $id) {
                 $_SESSION['edit_book']['res'] = "<div class='error'>Книга с таким названием уже добавлена!</div>";
                 
                 return false;
             }
             
             $query = "UPDATE book SET name = '$name', price = $price, about = '$about' WHERE id = $id";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+            $this->db->execute($query);
             
             // замена в БД авторов книги
             //-- сначала удаляю старые записи
             $query = "DELETE FROM book_author WHERE book_id = $id";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+            $this->db->execute($query);
             //--теперь добавляю новые записи
             $author_values = "";
             
@@ -218,20 +205,21 @@ abstract class ACore_admin {
             }
             $author_values = substr($author_values, 0, -1);
             $query = "INSERT INTO book_author (book_id, author_id) VALUES" . $author_values;
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+            $this->db->insert($query);
             
             // замена в БД жанров книги
             //-- сначала удаляю старые записи
             $query = "DELETE FROM book_genre WHERE book_id = $id";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+            $this->db->execute($query);
             //--теперь добавляю новые записи
             $genres_values = "";
+            
             foreach ($genres as $genre_id) {
                 $genres_values .= " ($id, $genre_id),";
             }
             $genres_values = substr($genres_values, 0, -1);
             $query = "INSERT INTO book_genre (book_id, genre_id) VALUES" . $genres_values;
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+            $this->db->insert($query);
             
             $_SESSION['answer'] = "<div class='success'>Тестовые данные книги изменены!</div>";
             
@@ -258,7 +246,8 @@ abstract class ACore_admin {
                         $this->resize("../userfiles/book_img/tmp/$imgName", "../userfiles/book_img/baseimg/$imgName", 220, 320, $imgExt);
                         unlink("../userfiles/book_img/tmp/$imgName");
                         
-                        mysqli_query($this->db, "UPDATE book SET img = '$imgName' WHERE id = $id");
+                        $query = "UPDATE book SET img = '$imgName' WHERE id = $id";
+                        $this->db->execute($query);
                     } else {
                         $_SESSION['edit_book']['res'] = "<div class='error'>Не удалось переместить загруженную картинку! Проверьте права на папки в каталоге ../userfiles/book_img/ </div>";
                     }
@@ -278,26 +267,23 @@ abstract class ACore_admin {
     /*===== Удаление книги =====*/
     public function del_book($id) {
         $query = "SELECT img FROM book WHERE id = $id";
-        $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
-        $row = mysqli_fetch_assoc($res);
-        
-        $img = $row['img']; // фото книги
+        $res = $this->db->queryOne($query);
+        $img = $res['img']; // фото книги
         
         if ($img) {
             unlink("../userfiles/book_img/baseimg/$img");
         }
         
         $query = "DELETE FROM book WHERE id = $id";
-        mysqli_query($this->db, $query);
         
-        if (mysqli_affected_rows($this->db) > 0) {
+        if ($this->db->execute($query)) {
             // удаление связанных записей об авторах
             $query = "DELETE FROM book_author WHERE book_id = $id";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+            $this->db->execute($query);
             
             // удаление связанных записей о жанрах
             $query = "DELETE FROM book_genre WHERE book_id = $id";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
+            $this->db->execute($query);
             
             $_SESSION['answer'] = "<div class='success'>Книга удалена</div>";
         } else {
@@ -320,9 +306,8 @@ abstract class ACore_admin {
             
             // проверка, нет ли уже такого автора
             $query = "SELECT id FROM author WHERE name = '$name'";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
             
-            if (mysqli_num_rows($res) > 0) {
+            if ($this->db->queryOne($query)) {
                 $_SESSION['add_author']['res'] = "<div class='error'>Автор ".$name." уже добавлен!</div>";
                 
                 return false;
@@ -330,9 +315,8 @@ abstract class ACore_admin {
             
             // добавление автора
             $query = "INSERT INTO author (name) VALUES ('$name')";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
             
-            if (mysqli_affected_rows($this->db) > 0) {
+            if ($this->db->insert($query)) {
                 $_SESSION['answer'] = "<div class='success'>Автор успешно добавлен!</div>";
                 
                 return true;
@@ -353,11 +337,9 @@ abstract class ACore_admin {
     /*===== Имя автора =====*/
     public function get_author_name($id) {
         $query = "SELECT name FROM author WHERE id = $id";
-        $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
-        $row = mysqli_fetch_assoc($res);
-        $author = $row['name'];
+        $res = $this->db->queryOne($query);
         
-        return $author;
+        return $res['name'];
     }
     
     /*===== Редактирование автора =====*/
@@ -372,18 +354,16 @@ abstract class ACore_admin {
             
             // проверка, нет ли уже такого автора
             $query = "SELECT id FROM author WHERE name = '$name'";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
             
-            if (mysqli_num_rows($res) > 0) {
+            if ($this->db->queryOne($query)) {
                 $_SESSION['edit_author']['res'] = "<div class='error'>Автор ".$name." уже добавлен!</div>";
                 
                 return false;
             }
             
             $query = "UPDATE author SET name = '$name' WHERE id = $id";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
             
-            if (mysqli_affected_rows($this->db) > 0) {
+            if ($this->db->execute($query)) {
                 $_SESSION['answer'] = "<div class='success'>Автор изменен!</div>";
                 
                 return true;
@@ -398,9 +378,8 @@ abstract class ACore_admin {
     /*===== Удаление автора =====*/
     public function del_author($id) {
         $query = "DELETE FROM author WHERE id = $id";
-        $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
         
-        if (mysqli_affected_rows($this->db) > 0) {
+        if ($this->db->execute($query)) {
             $_SESSION['answer'] = "<div class='success'>Автор успешно удален!</div>";
             
             return true;
@@ -426,18 +405,16 @@ abstract class ACore_admin {
             
             // проверка, нет ли уже такого жанра
             $query = "SELECT id FROM genre WHERE name = '$name'";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
             
-            if (mysqli_num_rows($res) > 0) {
+            if ($this->db->queryOne($query)) {
                 $_SESSION['add_genre']['res'] = "<div class='error'>Жанр ".$name." уже добавлен!</div>";
                 
                 return false;
             }
             
             $query = "INSERT INTO genre (name) VALUES ('$name')";
-            $res = mysqli_query($this->db, $query) or $this->db(mysqli_error($this->db));
             
-            if (mysqli_affected_rows($this->db) > 0) {
+            if ($this->db->insert($query)) {
                 $_SESSION['answer'] = "<div class='success'>Жанр успешно добавлен!</div>";
                 
                 return true;
@@ -452,21 +429,15 @@ abstract class ACore_admin {
     /* ===== Массив всех жанров ===== */
     public function get_genres() {
         $query = "SELECT id, name FROM genre ORDER BY name ASC";
-        $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
-        
-        while ($row = mysqli_fetch_assoc($res)) {
-            $this->genres[] = $row;
-        }
+        $this->genres = $this->db->queryAll($query);
     }
     
     /*===== Название жанра =====*/
     public function get_genre_name($id) {
         $query = "SELECT name FROM genre WHERE id = $id";
-        $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
-        $row = mysqli_fetch_assoc($res);
-        $genre = $row['name'];
+        $res = $this->db->queryOne($query);
         
-        return $genre;
+        return $res['name'];
     }
     
     /*===== Редактирование жанра =====*/
@@ -482,18 +453,16 @@ abstract class ACore_admin {
             
             // проверка, нет ли уже такого жанра
             $query = "SELECT id FROM genre WHERE name = '$name'";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
             
-            if (mysqli_num_rows($res) > 0) {
+            if ($this->db->queryOne($query)) {
                 $_SESSION['edit_genre']['res'] = "<div class='error'>Жанр ".$name." уже добавлен!</div>";
                 
                 return false;
             }
             
             $query = "UPDATE genre SET name = '$name' WHERE id = $id";
-            $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
             
-            if (mysqli_affected_rows($this->db) > 0) {
+            if ($this->db->execute($query)) {
                 $_SESSION['answer'] = "<div class='success'>Жанр изменен!</div>";
                 
                 return true;
@@ -508,9 +477,8 @@ abstract class ACore_admin {
     /*===== Удаление жанра =====*/
     public function del_genre($id) {
         $query = "DELETE FROM genre WHERE id = $id";
-        $res = mysqli_query($this->db, $query) or exit(mysqli_error($this->db));
         
-        if (mysqli_affected_rows($this->db) > 0) {
+        if ($this->db->execute($query)) {
             $_SESSION['answer'] = "<div class='success'>Жанр успешно удален!</div>";
             
             return true;

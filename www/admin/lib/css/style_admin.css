@@ -449,7 +449,7 @@ h2 {
             border-bottom: 1px solid #ededed;
         }
         
-            .leftbar_nav > li > a {
+            .leftbar_nav > li > span {
                 display: block;
                 color: #ededed;
                 cursor: pointer;
@@ -476,7 +476,7 @@ h2 {
                     background-position: -25px -15px;
                 }
             
-            .leftbar_nav > li > a:hover {
+            .leftbar_nav > li > span:hover {
                 background-color: #4A5862;
             }
             

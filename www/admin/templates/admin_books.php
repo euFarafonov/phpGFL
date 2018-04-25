@@ -7,13 +7,13 @@ if (isset($_SESSION['answer'])) {
     unset ($_SESSION['answer']);
 }
 ?>
-	<a class="button" href="?view=add_book">Добавить книгу</a>
+	<span class="button" data-todo="add_book">Добавить</span>
     
     <table class="pages_table">
         <tr>
     		<th>№</th>
             <th>Фото</th>
-    		<th>Название книги</th>
+    		<th>Наименование</th>
     		<th>Действие</th>
         </tr>
         <?php if($books) : ?>
@@ -24,9 +24,9 @@ if (isset($_SESSION['answer'])) {
             <td><img src="<?=BOOKIMG?><?=$book['img']?>"></td>
             <td class="left"><?=$book['name']?></td>
             <td>
-                <a href="?view=edit_book&book_id=<?=$book['id']?>" class="edit">редактировать</a>
+                <span data-id="<?=$book['id']?>" class="edit">редактировать</span>
                 |
-                <a href="?view=del_book&book_id=<?=$book['id']?>" class="del">удалить</a>
+                <span data-id="<?=$book['id']?>" class="del">удалить</span>
             </td>
         </tr>
         <?php $i++; ?>
@@ -34,5 +34,5 @@ if (isset($_SESSION['answer'])) {
         <?php endif; ?>
     </table>
     
-    <a class="button" href="?view=add_book">Добавить книгу</a>
+    <span class="button" data-todo="add_book">Добавить</span>
  </div>

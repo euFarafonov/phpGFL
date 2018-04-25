@@ -519,6 +519,7 @@ abstract class ACore_admin {
     
     /* ==================== ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ ==================== */
     /* ===== Подсвечивание активного пункта меню ===== */
+    /*
     public function active_url($str = 'view=admin') {
         $uri = $_SERVER['QUERY_STRING']; // получаем параметры
         
@@ -529,7 +530,7 @@ abstract class ACore_admin {
             return "class='active'";
         }
     }
-    
+    */
     /* ===== Ресайз картинок ===== */
     public function resize($target, $dest, $wmax, $hmax, $ext) {
         /*

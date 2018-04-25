@@ -9,9 +9,9 @@ function getXHR() {
     }
 }
 
-// ПОЛУЧЕНИЕ ВСЕХ КНИГ
-function getBook() {
-    data = "item=book&check=ajax";
+// ПОЛУЧЕНИЕ ДАННЫХ ИЗ БД: КНИГ, АВТОРОВ ИЛИ ЖАНРОВ
+function getData(item, link) {
+    var data = "item=" + item + "&check=ajax";
     var xhr = getXHR();
     
     xhr.onreadystatechange = function() {
@@ -19,14 +19,9 @@ function getBook() {
             var answer = JSON.parse(xhr.response);
             
             if (answer["state"] === "OK") {
-                console.log(answer);
-                
-                //cellImg.innerHTML = '<input id="butUpload" class="left" type="file" name="img">';
-                //input = document.getElementById('butUpload');
-                //listenInput(input);
+                renderTable(answer['res'], item, link);
             } else {
-                console.log(answer);
-                //return false;
+                console.log('error');
             }
         }
     };
@@ -35,12 +30,6 @@ function getBook() {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.send(data);
 }
-
-
-
-
-
-/*================================================================================================*/
 
 // удаление фото
 function del_img(id) {
@@ -65,4 +54,3 @@ function del_img(id) {
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     xhr.send(data);
 }
-

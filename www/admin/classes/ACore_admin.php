@@ -1,6 +1,7 @@
 <?php
 abstract class ACore_admin {
     protected $db,
+        $books = array(),// массив книг
         $authors = array(),// массив авторов
         $genres = array();// массив жанров
     
@@ -25,6 +26,7 @@ abstract class ACore_admin {
     
     /* ===== MAIN CONTENT ===== */
     public function get_body() {
+        $this->get_books();
         $this->get_authors();
         $this->get_genres();
         
@@ -36,6 +38,39 @@ abstract class ACore_admin {
     
     /* ===== ДИНАМИЧЕСКИЙ КОНТЕНТ ===== */
     abstract function get_content_admin();
+    
+    /*==================================================================================*/
+    /* ===== Массив всех книг ===== */
+    public function get_books() {
+        $query = "SELECT id, name, about, price, img FROM book ORDER BY name ASC";
+        $this->authors = $this->db->queryAll($query);
+    }
+    
+    /* ===== Массив всех авторов ===== */
+    public function get_authors() {
+        $query = "SELECT id, name FROM author ORDER BY name ASC";
+        $this->authors = $this->db->queryAll($query);
+    }
+    
+    /* ===== Массив всех жанров ===== */
+    public function get_genres() {
+        $query = "SELECT id, name FROM genre ORDER BY name ASC";
+        $this->genres = $this->db->queryAll($query);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     /* ==================== МЕТОДЫ ДЛЯ РАБОТЫ С КНИГАМИ ==================== */
@@ -328,11 +363,7 @@ abstract class ACore_admin {
         }
     }
     
-    /* ===== Массив всех авторов ===== */
-    public function get_authors() {
-        $query = "SELECT id, name FROM author ORDER BY name ASC";
-        $this->authors = $this->db->queryAll($query);
-    }
+    
     
     /*===== Имя автора =====*/
     public function get_author_name($id) {
@@ -426,11 +457,7 @@ abstract class ACore_admin {
         }
     }
     
-    /* ===== Массив всех жанров ===== */
-    public function get_genres() {
-        $query = "SELECT id, name FROM genre ORDER BY name ASC";
-        $this->genres = $this->db->queryAll($query);
-    }
+    
     
     /*===== Название жанра =====*/
     public function get_genre_name($id) {

@@ -1,14 +1,3 @@
-// создание объекта XHR
-function getXHR() {
-    if (window.XMLHttpRequest) {
-        return new XMLHttpRequest();
-    } else if(window.ActiveXObject) {
-        return new ActiveXObject("Microsoft.XMLHTTP");
-    } else {
-        return;
-    }
-}
-
 /* === Подтверждение удаления === */
 var delArr = document.querySelectorAll('.del, .delete');
 if (delArr.length > 0) {

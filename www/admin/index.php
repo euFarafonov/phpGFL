@@ -13,6 +13,14 @@ if ($_POST['check'] === 'dell_img') {
     exit();
 }
 
+// получение всех книг при запросе ajax
+if ($_POST['check'] === 'ajax') {
+    include 'classes/Ajax.php';
+    $ajax = new Ajax();
+    $ajax->get_content_admin();
+    exit();
+}
+/*
 $class = ($_GET['view']) ? trim(strip_tags($_GET['view'])) : 'admin';
 
 if (file_exists('classes/'.$class.'.php')) {
@@ -26,5 +34,8 @@ if (file_exists('classes/'.$class.'.php')) {
     }
 } else {
     exit("<p class='error'>Нет нужного файла!</p>");
-}
+}*/
+include 'classes/admin.php';
+$obj = new Admin();
+$obj->get_body();
 ?>

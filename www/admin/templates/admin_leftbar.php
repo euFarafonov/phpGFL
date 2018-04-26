@@ -7,10 +7,3 @@
         <li><span data-item="genre" data-name="Список жанров">Жанры</span></li>
     </ul>
 </div>
-<script>
-window.onload = function() {
-    var lb = new Leftbar({
-        lbId: 'leftbar'
-    });
-};
-</script>

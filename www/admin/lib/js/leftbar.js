@@ -2,17 +2,20 @@ function Leftbar(options) {
     var lb = document.getElementById(options.lbId);
     
     lb.addEventListener('click', function(event) {
-        event.preventDefault();
-        
         var target = event.target;
-        var activeLink = lb.querySelector('.active');
         
         if (target.tagName === 'SPAN' && !target.classList.contains('active')) {
-            activeLink.classList.remove('active');
+            var activeLink = lb.querySelector('.active');
+            if (activeLink) activeLink.classList.remove('active');
             target.classList.add('active');
             
             var linkType = target.dataset.item;
-            getData(linkType, target);
+            getData({
+                item: linkType,
+                target: target,
+                action: 'showData',
+                queryOpt: null
+            });
         }
     });
 }
@@ -27,7 +30,8 @@ function renderTable(arr, item, link) {
     var btnAddFirst = document.createElement('span');
     btnAddFirst.textContent = 'Добавить';
     btnAddFirst.classList.add('button');
-    btnAddFirst.dataset.toro = 'add_' + item;
+    btnAddFirst.classList.add('js_content');
+    btnAddFirst.dataset.todo = 'add_' + item;
             
     /* начало формирование таблицы */
     var table = document.createElement('table');
@@ -76,9 +80,9 @@ function renderTable(arr, item, link) {
             tr.appendChild(td);
             
             var td = document.createElement('td');
-            td.innerHTML = '<span data-id="' + arr[i]['id'] + '" class="edit">редактировать</span>\
+            td.innerHTML = '<span data-id="' + arr[i]['id'] + '" data-todo="edit_' + item + '" class="edit js_content">редактировать</span>\
             |\
-            <span data-id="' + arr[i]['id'] + '" class="del">удалить</span>';
+            <span data-id="' + arr[i]['id'] + '" data-todo="del_' + item + '" class="del js_content">удалить</span>';
             tr.appendChild(td);
             
             table.appendChild(tr);
@@ -89,7 +93,8 @@ function renderTable(arr, item, link) {
     var btnAddSecond = document.createElement('span');
     btnAddSecond.textContent = 'Добавить';
     btnAddSecond.classList.add('button');
-    btnAddSecond.dataset.toro = 'add_' + item;
+    btnAddSecond.classList.add('js_content');
+    btnAddSecond.dataset.todo = 'add_' + item;
     
     fragment.appendChild(header);
     fragment.appendChild(btnAddFirst);

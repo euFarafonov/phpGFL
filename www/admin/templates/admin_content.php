@@ -1,5 +1,5 @@
 <?php defined('MYBOOK') or exit('Access denied'); ?>
-<div class="content">
+<div id="content" class="content">
     <h1>Список всех книг</h1>
 <?php
 if (isset($_SESSION['answer'])) {
@@ -7,7 +7,7 @@ if (isset($_SESSION['answer'])) {
     unset ($_SESSION['answer']);
 }
 ?>
-	<span class="button" data-todo="add_book">Добавить</span>
+	<span class="button js_content" data-todo="add_book">Добавить</span>
     
     <table class="pages_table">
         <tr>
@@ -24,9 +24,9 @@ if (isset($_SESSION['answer'])) {
             <td><img src="<?=BOOKIMG?><?=$book['img']?>"></td>
             <td class="left"><?=$book['name']?></td>
             <td>
-                <span data-id="<?=$book['id']?>" class="edit">редактировать</span>
+                <span data-id="<?=$book['id']?>" data-todo="edit_book" class="edit js_content">редактировать</span>
                 |
-                <span data-id="<?=$book['id']?>" class="del">удалить</span>
+                <span data-id="<?=$book['id']?>" data-todo="del_book" class="del js_content">удалить</span>
             </td>
         </tr>
         <?php $i++; ?>
@@ -34,5 +34,5 @@ if (isset($_SESSION['answer'])) {
         <?php endif; ?>
     </table>
     
-    <span class="button" data-todo="add_book">Добавить</span>
- </div>
+    <span class="button js_content" data-todo="add_book">Добавить</span>
+</div>

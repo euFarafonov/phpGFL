@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="lib/css/style_admin.css">
     <title>Админпанель <?=SITENAME?></title>
     <script>
-        var path = '<?=PATH?>';
+        var path = '<?=PATH?>',
+            currency = '<?=CURRENCY?>';
     </script>
 </head>
 

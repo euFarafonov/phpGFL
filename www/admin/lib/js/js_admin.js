@@ -1,5 +1,5 @@
 /* === Подтверждение удаления === */
-var delArr = document.querySelectorAll('.del, .delete');
+var delArr = document.querySelectorAll('.delete');
 if (delArr.length > 0) {
     for (var i = 0; i < delArr.length; i++) {
         delArr[i].addEventListener('click',function(event) {

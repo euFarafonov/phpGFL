@@ -35,7 +35,7 @@ if (file_exists('classes/'.$class.'.php')) {
 } else {
     exit("<p class='error'>Нет нужного файла!</p>");
 }*/
-include 'classes/admin.php';
-$obj = new Admin();
+include 'classes/AdminContent.php';
+$obj = new AdminContent();
 $obj->get_body();
 ?>

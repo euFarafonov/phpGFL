@@ -253,6 +253,7 @@ h2 {
 
 .small {
     font-size: 10px;
+    display: block;
 }
 
 .highlight td {

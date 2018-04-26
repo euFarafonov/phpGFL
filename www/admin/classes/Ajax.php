@@ -2,14 +2,24 @@
 
 class Ajax extends ACore_admin {
     public function get_content_admin() {
-        $item = $_POST['item'];
+        $table = $_POST['item'];
+        $what = "*";
         $where = "";
+        $order = " ORDER BY name ASC";
         
-        if ($_POST['whereName']) {
-            $where = "WHERE " . $_POST['whereName'] . " = " . $_POST['whereValue'] . " ";
+        if ($_POST['what']) {
+            $what = $_POST['what'];
         }
         
-        $query = "SELECT * FROM " . $item . " " . $where . "ORDER BY name ASC";
+        if ($_POST['whereName']) {
+            $where = "WHERE " . $_POST['whereName'] . " = " . $_POST['whereValue'];
+        }
+        
+        if ($_POST['order'] === 'no') {
+            $order = "";
+        }
+        
+        $query = "SELECT " . $what . " FROM " . $table . " " . $where . $order;
         $res = $this->db->queryAll($query);
         
         if ($res) {

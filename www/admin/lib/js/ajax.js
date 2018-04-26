@@ -11,15 +11,25 @@ function getXHR() {
 
 // ПОЛУЧЕНИЕ ДАННЫХ ИЗ БД: КНИГ, АВТОРОВ ИЛИ ЖАНРОВ
 function getData(options) {
-    var item = options.item; // book/author/genre
+    var item = encodeURIComponent(options.item); // book/author/genre
     var link = options.target; // кнопка
     var action = options.action; // showData/addData/editData
     var queryOpt = options.queryOpt; // объект параметров для запроса
     
-    var data = "item=" + item + "&check=ajax&queryOpt=" + queryOpt;
+    var data = "item=" + item + "&check=ajax";
     
-    if (queryOpt && queryOpt.whereName) {
-        data += "&whereName=" + queryOpt.whereName + "&whereValue=" + queryOpt.whereValue;
+    if (queryOpt) {
+        if (queryOpt.whatName) {
+            data += "&what=" + encodeURIComponent(queryOpt.whatName);
+        }
+        
+        if (queryOpt.whereName) {
+            data += "&whereName=" + encodeURIComponent(queryOpt.whereName) + "&whereValue=" + encodeURIComponent(queryOpt.whereValue);
+        }
+        
+        if (queryOpt.order === false) {
+            data += "&order=no";
+        }
     }
     
     var xhr = getXHR();
@@ -40,6 +50,14 @@ function getData(options) {
                     
                     case 'editData':
                         renderEdit(answer['res'][0], item);
+                    break;
+                    
+                    case 'get_author_id':
+                        saveAuthorsId(answer['res']);
+                    break;
+                    
+                    case 'get_genre_id':
+                        saveGenresId(answer['res']);
                     break;
                 }
             } else {

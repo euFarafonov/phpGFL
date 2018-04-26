@@ -4,6 +4,7 @@
 <script type="text/javascript" src="lib/js/js_admin.js"></script>
 <script type="text/javascript" src="lib/js/leftbar.js"></script>
 <script type="text/javascript" src="lib/js/content.js"></script>
+<script type="text/javascript" src="lib/js/loadimage.js"></script>
 <script>
 window.onload = function() {
     var lb = new Leftbar({

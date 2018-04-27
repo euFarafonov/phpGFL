@@ -1,6 +1,3 @@
-var authorsId = null;
-var genresId = null;
-
 function Content(options) {
     var content = document.getElementById(options.contentId);
     
@@ -20,10 +17,33 @@ function Content(options) {
                     renderAdd(item);
                 break;
                 
+                case 'del':
+                    if (!confirm("Подтвердите удаление")) return false;
+                    var id = target.dataset.id;
+                    
+                    delData({
+                        item: item,
+                        id: id
+                    });
+                break;
+                
                 case 'edit':
                     var id = target.dataset.id;
                     
                     var p = new Promise(function(resolve, reject){
+                        getData({
+                            item: item,
+                            target: null,
+                            action: 'editData',
+                            queryOpt: {
+                                whereName: 'id',
+                                whereValue: id
+                            }
+                        });
+                        resolve();
+                    });
+                    /*
+                    p.then(function(){
                         getData({
                             item: 'book_author',
                             target: null,
@@ -35,9 +55,9 @@ function Content(options) {
                                 order: false
                             }
                         });
-                        resolve();
-                    })
-                    .then(function(){
+                    });
+                    
+                    p.then(function(){
                         getData({
                             item: 'book_genre',
                             target: null,
@@ -49,48 +69,16 @@ function Content(options) {
                                 order: false
                             }
                         });
-                    })
-                    .then(function(){
-                        getData({
-                            item: item,
-                            target: null,
-                            action: 'editData',
-                            queryOpt: {
-                                whereName: 'id',
-                                whereValue: id
-                            }
-                        });
-                        console.log(authorsId);
-                        console.log(genresId);
-                    })
-                    .then(function(){
-                        
-                        //loadimage();
                     });
                     
-                    
-                break;
-                
-                case 'del':
-                    if (!confirm("Подтвердите удаление")) return false;
-                    
-                    var id = target.dataset.id;
-                    
+                    p.then(function(){
+                        //loadimage();
+                    });
+                    */
                 break;
             }
         }
     });
-}
-
-/* СОХРАНЕНИЕ ID АВТОРОВ И ЖАНРОВ */
-function saveAuthorsId(arr) {
-    console.log(1);
-    authorsId = arr;
-}
-
-function saveGenresId(arr) {
-    console.log(2);
-    genresId = arr;
 }
 
 /* ФОРМИРОВАНИЕ СТРАНИЦЫ ДОБАВЛЕНИЯ КНИГИ, АВТОРА ИЛИ ЖАНРА */
@@ -244,6 +232,11 @@ function renderAdd(item) {
     
     button.type = 'button';
     button.textContent = 'Добавить';
+    button.dataset.todo = 'add_' + item;
+    button.addEventListener('click', function(event) {
+        var target = event.target;
+        addItem(target);
+    });
     form.appendChild(button);
     
     
@@ -252,6 +245,28 @@ function renderAdd(item) {
     
     content.innerHTML = '';
     content.appendChild(fragment);
+}
+
+/* ФУНКЦИЯ ДОБАВЛЕНИЯ НОВЫХ КНИГ, АВТОРОВ, ЖАНРОВ */
+function addItem(target) {
+    var todoArr = target.dataset.todo.split('_');
+    var action = todoArr[0]; // add/edit/del
+    var item = todoArr[1]; // book/author/genre
+    
+    if (action === 'add') {
+        var name = document.querySelector('input[name="name"]').value;
+        
+        if (!name) {
+            alert('Должно быть название');
+            return false;
+        }
+        
+        addData({
+            item: item,
+            name: name,
+            data: null
+        });
+    }
 }
 
 /* ФОРМИРОВАНИЕ SELECT-ов ДЛЯ СТРАНИЦ ДОБАВЛЕНИЯ И РЕДАКТИРОВАНИЯ */
@@ -269,55 +284,6 @@ function renderSelect(arr, item, select) {
     });
 }
 
-/* ФОРМИРОВАНИЕ НЕСКОЛЬКИХ SELECT-ов */
-/*
-function renderMultiSelect(arr, tdId, selectName) {
-    var td = content.querySelector('#' + tdId);
-    
-    for (var i = 0; i < arr.length; i++) {
-        var select = document.createElement('select');
-        select.classList.add('js_field');
-        select.classList.add('left');
-        select.name = selectName;
-        td.appendChild(select);
-        
-        getData({
-            item: 'author',
-            target: select,
-            action: 'addData',
-            queryOpt: null
-        });
-    }
-        
-    var btnAdd = document.createElement('button');
-    btnAdd.id = 'add_select';
-    btnAdd.type = 'button';
-    btnAdd.textContent = 'Добавить поле';
-    td.appendChild(btnAdd);
-    
-    var btnDel = document.createElement('button');
-    btnDel.id = 'del_select';
-    btnDel.type = 'button';
-    btnDel.textContent = 'Удалить поле';
-    btnDel.classList.add('del_fields');
-    td.appendChild(btnDel);
-    
-       
-    
-    for (var i = 0; i < arr.length; i++) {
-        var option = document.createElement('option');
-        option.textContent = arr[i]['name'];
-        option.value = arr[i]['id'];
-        select.appendChild(option);
-    }
-    
-    var field = new Fields({
-        parent: select.parentElement.id,
-        maxFields: 3
-    });
-    
-}
-*/
 /* ФОРМИРОВАНИЕ СТРАНИЦЫ РЕДАКТИРОВАНИЯ КНИГИ, АВТОРА ИЛИ ЖАНРА */
 function renderEdit(arr, item) {
     var content = document.querySelector('.content');
@@ -467,7 +433,11 @@ function renderEdit(arr, item) {
     button.type = 'button';
     button.textContent = 'Редактировать';
     button.dataset.id = arr['id'];
-    button.dataset.item = item;
+    button.dataset.todo = 'edit_' + item;
+    button.addEventListener('click', function(event) {
+        var target = event.target;
+        editItem(target);
+    });
     form.appendChild(button);
     
     
@@ -476,4 +446,28 @@ function renderEdit(arr, item) {
     
     content.innerHTML = '';
     content.appendChild(fragment);
+}
+
+/* ФУНКЦИЯ РЕДАКТИРОВАНИЯ ДАННЫХ: КНИГ, АВТОРОВ, ЖАНРОВ */
+function editItem(target) {
+    var todoArr = target.dataset.todo.split('_');
+    var action = todoArr[0]; // add/edit/del
+    var item = todoArr[1]; // book/author/genre
+    var id = +target.dataset.id;
+    
+    if (action === 'edit') {
+        var name = document.querySelector('input[name="name"]').value;
+        
+        if (!name) {
+            alert('Должно быть название');
+            return false;
+        }
+        
+        editData({
+            item: item,
+            name: name,
+            id: id,
+            data: null
+        });
+    }
 }

@@ -14,7 +14,7 @@
 <body>
 <div class="wrapper">
 	<header class="header clearfix">
-		<a class="header_logo" href="<?=PATH?>admin/?view=admin">my-<span>shop</span>-admin</a>
+		<a class="header_logo" href="<?=PATH?>admin">my-<span>shop</span>-admin</a>
         <div class="header_wrap clearfix">
             <div class="header_left"></div>
             <div class="header_right">

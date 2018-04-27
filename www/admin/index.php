@@ -13,11 +13,35 @@ if ($_POST['check'] === 'dell_img') {
     exit();
 }
 
-// получение всех книг при запросе ajax
-if ($_POST['check'] === 'ajax') {
-    include 'classes/Ajax.php';
-    $ajax = new Ajax();
-    $ajax->get_content_admin();
+// получение всех данных при запросе ajax
+if ($_POST['check'] === 'ajaxget') {
+    include 'classes/AjaxGet.php';
+    $ajaxGet = new AjaxGet();
+    $ajaxGet->get_content_admin();
+    exit();
+}
+
+// добавление данных при запросе ajax
+if ($_POST['check'] === 'ajaxadd') {
+    include 'classes/AjaxAdd.php';
+    $ajaxAdd = new AjaxAdd();
+    $ajaxAdd->get_content_admin();
+    exit();
+}
+
+// удаление данных при запросе ajax
+if ($_POST['check'] === 'ajaxdel') {
+    include 'classes/AjaxDel.php';
+    $ajaxDel = new AjaxDel();
+    $ajaxDel->get_content_admin();
+    exit();
+}
+
+// редактирование данных при запросе ajax
+if ($_POST['check'] === 'ajaxedit') {
+    include 'classes/AjaxEdit.php';
+    $ajaxEdit = new AjaxEdit();
+    $ajaxEdit->get_content_admin();
     exit();
 }
 /*

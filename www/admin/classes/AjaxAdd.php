@@ -1,12 +1,14 @@
 <?php
 
-class Ajax extends ACore_admin {
+class AjaxAdd extends ACore_admin {
     public function get_content_admin() {
         $table = $_POST['item'];
-        $what = "*";
-        $where = "";
-        $order = " ORDER BY name ASC";
+        $name = $_POST['name'];
         
+        //$what = "*";
+        //$where = "";
+        //$order = " ORDER BY name ASC";
+        /*
         if ($_POST['what']) {
             $what = $_POST['what'];
         }
@@ -18,14 +20,14 @@ class Ajax extends ACore_admin {
         if ($_POST['order'] === 'no') {
             $order = "";
         }
-        
-        $query = "SELECT " . $what . " FROM " . $table . " " . $where . $order;
-        $res = $this->db->queryAll($query);
+        */
+        $query = "INSERT INTO " . $table . " (name) VALUES ('$name')";
+        $res = $this->db->insert($query);
         
         if ($res) {
             $answer = array("state" => "OK", "res" => $res);
         } else {
-            $answer = array("state" => "ERROR", "res" => null);
+            $answer = array("state" => "ERROR", "res" => $res);
         }
         echo json_encode($answer);
     }

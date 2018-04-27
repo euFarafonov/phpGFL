@@ -16,7 +16,7 @@ function getData(options) {
     var action = options.action; // showData/addData/editData
     var queryOpt = options.queryOpt; // объект параметров для запроса
     
-    var data = "item=" + item + "&check=ajax";
+    var data = "item=" + item + "&check=ajaxget";
     
     if (queryOpt) {
         if (queryOpt.whatName) {
@@ -53,13 +53,117 @@ function getData(options) {
                     break;
                     
                     case 'get_author_id':
-                        saveAuthorsId(answer['res']);
+                        //saveAuthorsId(answer['res']);
                     break;
                     
                     case 'get_genre_id':
-                        saveGenresId(answer['res']);
+                        //saveGenresId(answer['res']);
                     break;
                 }
+            } else {
+                console.log('error_ajax');
+            }
+        }
+    };
+    
+    xhr.open('POST', path + 'admin/index.php', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send(data);
+}
+
+// ДОБАВЛЕНИЕ ДАННЫХ В БД: КНИГ, АВТОРОВ ИЛИ ЖАНРОВ
+function addData(options) {
+    var item = options.item; // book/author/genre
+    var name = options.name;
+    var itemData = options.data; // объект параметров
+    
+    var data = "item=" + item + "&check=ajaxadd&name=" + name;
+    
+    var xhr = getXHR();
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            var answer = JSON.parse(xhr.response);
+            
+            if (answer["state"] === "OK") {
+                var leftBtn = document.querySelector('.leftbar span[data-item="'+item+'"]');
+                leftBtn.classList.add('active');
+                
+                getData({
+                    item: item,
+                    target: leftBtn,
+                    action: 'showData',
+                    queryOpt: null
+                });
+            } else {
+                alert('Ошибка добавления!');
+            }
+        }
+    };
+    
+    xhr.open('POST', path + 'admin/index.php', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send(data);
+}
+
+// УДАЛЕНИЕ ДАННЫХ ИЗ БД: КНИГ, АВТОРОВ ИЛИ ЖАНРОВ
+function delData(options) {
+    var item = options.item; // book/author/genre
+    var id = +options.id;
+    var data = "item=" + item + "&check=ajaxdel&id=" + id;
+    
+    var xhr = getXHR();
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            var answer = JSON.parse(xhr.response);
+            
+            if (answer["state"] === "OK") {
+                var leftBtn = document.querySelector('.leftbar span[data-item="'+item+'"]');
+                leftBtn.classList.add('active');
+                
+                getData({
+                    item: item,
+                    target: leftBtn,
+                    action: 'showData',
+                    queryOpt: null
+                });
+                
+            } else {
+                console.log('error_ajax');
+            }
+        }
+    };
+    
+    xhr.open('POST', path + 'admin/index.php', true);
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    xhr.send(data);
+}
+
+// РЕДАКТИРОВАНИЕ ДАННЫХ В БД: КНИГ, АВТОРОВ ИЛИ ЖАНРОВ
+function editData(options) {
+    var item = options.item; // book/author/genre
+    var name = options.name;
+    var id = +options.id;
+    var data = "item=" + item + "&check=ajaxedit&id=" + id + "&name=" + name;
+    
+    var xhr = getXHR();
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            var answer = JSON.parse(xhr.response);
+            
+            if (answer["state"] === "OK") {
+                var leftBtn = document.querySelector('.leftbar span[data-item="'+item+'"]');
+                leftBtn.classList.add('active');
+                
+                getData({
+                    item: item,
+                    target: leftBtn,
+                    action: 'showData',
+                    queryOpt: null
+                });
+                
             } else {
                 console.log('error_ajax');
             }
